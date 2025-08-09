@@ -1,0 +1,26 @@
+{
+	"geode": "4.7.0",
+	"gd": {
+		"win": "2.2074",
+		"android": "2.2074",
+		"mac": "2.2074",
+		"ios": "2.2074"
+	},
+	"id": "alphalaneous.tooltips",
+	"name": "Tooltips",
+	"version": "v1.0.0",
+	"developer": "Alphalaneous",
+	"description": "Adds tooltips to buttons",
+	"dependencies": {
+		"alphalaneous.alphas_geode_utils": ">=1.1.8",
+		"geode.node-ids": ">=1.21.1"
+	},
+	"links": {
+		"homepage": "https://linktr.ee/Alphalaneous",
+		"source": "https://github.com/Alphalaneous/Tooltips",
+		"community": "https://discord.gg/Txn2CA5dHF"
+	},
+	"tags": [
+		"universal", "enhancement", "interface"
+	]
+}
