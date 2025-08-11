@@ -16,6 +16,8 @@ static std::unordered_map<std::string, std::string> g_simpleReplacements = {
 	{"gd", "GD"},
 	{"youtube", "YouTube"},
 	{"robtop", "RobTop"},
+	{"hsv", "HSV"},
+	{"ui", "UI"},
 };
 
 class TooltipNode : public CCNodeRGBA {
@@ -23,8 +25,8 @@ protected:
     CCLabelBMFont* m_label = nullptr;
     CCScale9Sprite* m_bg = nullptr;
     CCNode* m_currentActiveNode = nullptr;
-    bool m_negativeOffset = false;
     float m_nodeScale = 1.f;
+    float m_offset;
 	ccColor3B m_nodeColor;
 public:
     static TooltipNode* create() {
@@ -166,12 +168,8 @@ public:
         m_label->runAction(CCFadeTo::create(0.1f, 255));
 
         auto currentPos = getPosition();
-#ifdef GEODE_IS_DESKTOP
-        float offset = m_negativeOffset ? -6.f : 6.f;
-#else
-        float offset = m_negativeOffset ? -15.f : 15.f;
-#endif
-        runAction(CCMoveTo::create(0.1f, {currentPos.x, currentPos.y + offset}));
+
+        runAction(CCMoveTo::create(0.1f, {currentPos.x, currentPos.y + m_offset}));
         runAction(CCScaleTo::create(0.1f, 0.5f));
     }
 
@@ -207,15 +205,26 @@ public:
         auto nodeWorldSize = node->boundingBox().size;
 
         float heightOffset = nodeWorldSize.height / 2;
-        m_negativeOffset = false;
+        bool negativeOffset = false;
 
         constexpr float realScale = 0.5f;
         auto realSize = getContentSize() * realScale;
 
-        if ((heightOffset + realSize.height / 2 + worldPos.y) > winSize.height) {
+#ifdef GEODE_IS_DESKTOP
+        m_offset = 6.f;
+#else
+        m_offset = 15.f;
+#endif
+        if ((heightOffset + realSize.height / 2 + worldPos.y + m_offset) > winSize.height) {
             heightOffset *= -1;
-            m_negativeOffset = true;
+            negativeOffset = true;
+#ifdef GEODE_IS_DESKTOP
+            m_offset = -6.f;
+#else
+            m_offset = -15.f;
+#endif
         }
+
         worldPos.y += heightOffset;
 
         constexpr int sidePadding = 2;
