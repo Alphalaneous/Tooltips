@@ -23,7 +23,7 @@ static std::unordered_map<std::string, std::string> g_simpleReplacements = {
 class TooltipNode : public CCNodeRGBA {
 protected:
     CCLabelBMFont* m_label = nullptr;
-    CCScale9Sprite* m_bg = nullptr;
+    geode::NineSlice* m_bg = nullptr;
     CCNode* m_currentActiveNode = nullptr;
     float m_nodeScale = 1.f;
     float m_offset;
@@ -40,7 +40,7 @@ public:
     }
 
     bool init() {
-        m_bg = CCScale9Sprite::create("square02b_001.png");
+        m_bg = geode::NineSlice::create("square02b_001.png");
         m_bg->setScale(0.5f);
         m_bg->setColor({0, 0, 0});
         m_bg->setOpacity(200);
