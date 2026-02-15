@@ -1,6 +1,6 @@
 #include <Geode/Geode.hpp>
-#include <alphalaneous.alphas_geode_utils/include/NodeModding.h>
-#include <alphalaneous.alphas_geode_utils/include/Utils.h>
+#include <alphalaneous.alphas_geode_utils/include/ObjectModify.hpp>
+#include <alphalaneous.alphas_geode_utils/include/Utils.hpp>
 
 using namespace geode::prelude;
 
@@ -128,12 +128,12 @@ public:
 
         if (auto child = getSceneChildContainingNode(node)) {
             for (auto c : CCArrayExt<CCNode*>(child->getChildren())) {
-                if (!AlphaUtils::Cocos::hasNode(node, c)) {
+                if (!alpha::utils::cocos::hasNode(node, c)) {
                     shouldCheck = true;
                 }
                 if (shouldCheck) {
                     if (typeinfo_cast<FLAlertLayer*>(c) || typeinfo_cast<CCBlockLayer*>(c)) {
-                        if (AlphaUtils::Cocos::hasNode(node, c)) continue;
+                        if (alpha::utils::cocos::hasNode(node, c)) continue;
                         lastAlert = true;
                     }
                 }
