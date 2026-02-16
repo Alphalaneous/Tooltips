@@ -295,11 +295,12 @@ class $classModify(MyCCMenu, CCMenu) {
             return;
         }
 
+        CCNode* activeNode = nullptr;
+
 #ifdef GEODE_IS_DESKTOP
         auto mousePos = getMousePos();
         auto local = convertToNodeSpace(mousePos);
 
-        CCNode* activeNode = nullptr;
 
         for (auto child : CCArrayExt<CCNode*>(getChildren())) {
             if (!nodeIsVisible(child)) continue;
