@@ -1,3 +1,6 @@
+# 1.0.4
+- Fix major performance issue
+
 # 1.0.3
 - Fix tooltips persisting
 - Fix tooltips not showing when leaving a menu

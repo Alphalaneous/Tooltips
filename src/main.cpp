@@ -179,7 +179,7 @@ public:
         if (!item) return;
 #ifdef GEODE_IS_DESKTOP
 		if (item->isSelected()) {
-			return setVisible(false);
+			return removeFromParent();
 		}
 #endif
         if (m_currentActiveNode == node && getParent()) return;
@@ -187,7 +187,8 @@ public:
         auto str = typeinfo_cast<CCString*>(node->getUserObject("tooltip"_spr));
         if (!node || (text.empty() && (!str || std::string_view(str->getCString()).empty()))) return;
 
-        setVisible(true);
+        OverlayManager::get()->addChild(this);
+
         setScale(0.4f);
         m_bg->setOpacity(0);
         m_label->setOpacity(0);
@@ -249,21 +250,27 @@ public:
 class $classModify(MyCCMenu, CCMenu) {
     struct Fields {
         Ref<TooltipNode> m_tooltipNode;
-        ~Fields() { m_tooltipNode->removeFromParent(); }
+        ~Fields() { 
+            m_tooltipNode->removeFromParent(); 
+        }
     };
 
     void modify() {
         auto fields = m_fields.self();
         fields->m_tooltipNode = TooltipNode::create();
-        OverlayManager::get()->addChild(fields->m_tooltipNode);
 
         schedule(schedule_selector(MyCCMenu::checkMouse));
     }
 
     void checkMouse(float) {
-        if (!nodeIsVisible(this)) return;
-
         auto fields = m_fields.self();
+
+        if (!nodeIsVisible(this)) {
+            fields->m_tooltipNode->resetActiveNode();
+            fields->m_tooltipNode->removeFromParent();
+            return;
+        }
+
         bool shown = false;
 
 #ifdef GEODE_IS_DESKTOP
@@ -288,7 +295,7 @@ class $classModify(MyCCMenu, CCMenu) {
 #endif
         if (!shown) {
             fields->m_tooltipNode->resetActiveNode();
-            fields->m_tooltipNode->setVisible(false);
+            fields->m_tooltipNode->removeFromParent();
         }
     }
 };
