@@ -57,6 +57,10 @@ public:
         return true;
     }
 
+    void resetActiveNode() {
+        m_currentActiveNode = nullptr;
+    }
+
     static void uppercaseFirstChar(std::string& str) {
         if (!str.empty()) {
             str[0] = static_cast<char>(std::toupper(static_cast<unsigned char>(str[0])));
@@ -107,10 +111,6 @@ public:
         auto center = getContentSize() / 2;
         m_label->setPosition(center);
         m_bg->setPosition(center);
-    }
-
-    void hideTooltip() {
-        removeFromParentAndCleanup(false);
     }
 
     static CCNode* getSceneChildContainingNode(CCNode* node) {
@@ -178,15 +178,15 @@ public:
         if (!item) return;
 #ifdef GEODE_IS_DESKTOP
 		if (item->isSelected()) {
-			return removeFromParentAndCleanup(false);
+			return setVisible(false);
 		}
 #endif
         if (m_currentActiveNode == node && getParent()) return;
 
-        removeFromParentAndCleanup(false);
         auto str = typeinfo_cast<CCString*>(node->getUserObject("tooltip"_spr));
         if (!node || (text.empty() && (!str || std::string_view(str->getCString()).empty()))) return;
 
+        setVisible(true);
         setScale(0.4f);
         m_bg->setOpacity(0);
         m_label->setOpacity(0);
@@ -197,8 +197,6 @@ public:
 
         if (!isHoverable(node, worldPos)) return;
 
-        CCScene::get()->addChild(this);
-        setZOrder(CCScene::get()->getHighestChildZ() + 1);
         setLabel(labelText);
 
         auto winSize = CCDirector::get()->getWinSize();
@@ -247,26 +245,30 @@ public:
     }
 };
 
-class $nodeModify(MyCCMenu, cocos2d::CCMenu) {
+class $classModify(MyCCMenu, CCMenu) {
     struct Fields {
         Ref<TooltipNode> m_tooltipNode;
-        ~Fields() { m_tooltipNode->hideTooltip(); }
+        ~Fields() { m_tooltipNode->removeFromParent(); }
     };
 
     void modify() {
         auto fields = m_fields.self();
         fields->m_tooltipNode = TooltipNode::create();
+        OverlayManager::get()->addChild(fields->m_tooltipNode);
+
         schedule(schedule_selector(MyCCMenu::checkMouse));
     }
 
     void checkMouse(float) {
         if (!nodeIsVisible(this)) return;
+
         auto fields = m_fields.self();
         bool shown = false;
 
 #ifdef GEODE_IS_DESKTOP
         auto mousePos = getMousePos();
         auto local = convertToNodeSpace(mousePos);
+
         for (auto child : CCArrayExt<CCNode*>(getChildren())) {
             if (!nodeIsVisible(child)) continue;
             if (child->boundingBox().containsPoint(local)) {
@@ -283,6 +285,9 @@ class $nodeModify(MyCCMenu, cocos2d::CCMenu) {
             }
         }
 #endif
-        if (!shown) fields->m_tooltipNode->hideTooltip();
+        if (!shown) {
+            fields->m_tooltipNode->resetActiveNode();
+            fields->m_tooltipNode->setVisible(false);
+        }
     }
 };
