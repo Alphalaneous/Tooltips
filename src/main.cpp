@@ -316,8 +316,6 @@ class $classModify(MyCCMenu, CCMenu) {
             if (item->isSelected()) {
                 TooltipNode::get()->showTooltip(item, item->getID());
                 activeNode = item;
-                break;
-
             }
         }
 #endif
