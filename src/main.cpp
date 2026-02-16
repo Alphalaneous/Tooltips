@@ -25,7 +25,7 @@ class TooltipNode : public CCNodeRGBA {
 protected:
     CCLabelBMFont* m_label = nullptr;
     geode::NineSlice* m_bg = nullptr;
-    CCNode* m_currentActiveNode = nullptr;
+    std::set<CCNode*> m_currentActiveNodes;
     float m_nodeScale = 1.f;
     float m_offset;
 	ccColor3B m_nodeColor;
@@ -38,6 +38,12 @@ public:
         }
         delete ret;
         return nullptr;
+    }
+
+    static TooltipNode* get() {
+        static Ref<TooltipNode> instance = nullptr;
+        if (!instance) instance = TooltipNode::create();
+        return instance;
     }
 
     bool init() {
@@ -58,8 +64,12 @@ public:
         return true;
     }
 
-    void resetActiveNode() {
-        m_currentActiveNode = nullptr;
+    void removeActiveNode(CCNode* node) {
+        if (!node) return;
+        m_currentActiveNodes.erase(node);
+        if (m_currentActiveNodes.size() == 0) {
+            setVisible(false);
+        }
     }
 
     static void uppercaseFirstChar(std::string& str) {
@@ -179,26 +189,40 @@ public:
         if (!item) return;
 #ifdef GEODE_IS_DESKTOP
 		if (item->isSelected()) {
-			return removeFromParent();
+            setVisible(false);
+            m_currentActiveNodes.erase(node);
+            return;
 		}
 #endif
-        if (m_currentActiveNode == node && getParent()) return;
+        if (m_currentActiveNodes.contains(node) && getParent()) {
+            setVisible(true);
+            return;
+        }
 
         auto str = typeinfo_cast<CCString*>(node->getUserObject("tooltip"_spr));
-        if (!node || (text.empty() && (!str || std::string_view(str->getCString()).empty()))) return;
-
-        OverlayManager::get()->addChild(this);
+        if (!node || (text.empty() && (!str || std::string_view(str->getCString()).empty()))) {
+            m_currentActiveNodes.erase(node);
+            return;
+        }
 
         setScale(0.4f);
         m_bg->setOpacity(0);
         m_label->setOpacity(0);
-        m_currentActiveNode = node;
         auto worldPos = node->convertToWorldSpaceAR(CCPointZero);
         auto labelText = str ? str->getCString() : deduceExpectedName(node, text);
-        if (labelText.empty()) return;
+        if (labelText.empty()) {
+            m_currentActiveNodes.erase(node);
+            return;
+        }
 
-        if (!isHoverable(node, worldPos)) return;
+        if (!isHoverable(node, worldPos)) {
+            m_currentActiveNodes.erase(node);
+            return;
+        }
 
+        m_currentActiveNodes.insert(node);
+
+        setVisible(true);
         setLabel(labelText);
 
         auto winSize = CCDirector::get()->getWinSize();
@@ -247,55 +271,62 @@ public:
     }
 };
 
+$execute {
+    auto tooltip = TooltipNode::create();
+    OverlayManager::get()->addChild(TooltipNode::get());
+}
+
 class $classModify(MyCCMenu, CCMenu) {
+
     struct Fields {
-        Ref<TooltipNode> m_tooltipNode;
-        ~Fields() { 
-            m_tooltipNode->removeFromParent(); 
+        CCNode* m_activeNode = nullptr;
+        ~Fields() {
+            TooltipNode::get()->removeActiveNode(m_activeNode);
         }
     };
 
     void modify() {
-        auto fields = m_fields.self();
-        fields->m_tooltipNode = TooltipNode::create();
-
         schedule(schedule_selector(MyCCMenu::checkMouse));
     }
 
     void checkMouse(float) {
         auto fields = m_fields.self();
-
         if (!nodeIsVisible(this)) {
-            fields->m_tooltipNode->resetActiveNode();
-            fields->m_tooltipNode->removeFromParent();
             return;
         }
-
-        bool shown = false;
 
 #ifdef GEODE_IS_DESKTOP
         auto mousePos = getMousePos();
         auto local = convertToNodeSpace(mousePos);
 
+        CCNode* activeNode = nullptr;
+
         for (auto child : CCArrayExt<CCNode*>(getChildren())) {
             if (!nodeIsVisible(child)) continue;
             if (child->boundingBox().containsPoint(local)) {
-                fields->m_tooltipNode->showTooltip(child, child->getID());
-                shown = true;
+                TooltipNode::get()->showTooltip(child, child->getID());
+                activeNode = child;
+                break;
             }
         }
 #else
         auto self = reinterpret_cast<CCMenu*>(this);
         if (auto item = self->m_pSelectedItem) {
             if (item->isSelected()) {
-                fields->m_tooltipNode->showTooltip(item, item->getID());
-                shown = true;
+                TooltipNode::get()->showTooltip(item, item->getID());
+                activeNode = item;
+                break;
+
             }
         }
 #endif
-        if (!shown) {
-            fields->m_tooltipNode->resetActiveNode();
-            fields->m_tooltipNode->removeFromParent();
+        if (!activeNode) {
+            TooltipNode::get()->removeActiveNode(fields->m_activeNode);
         }
+
+        if (activeNode != fields->m_activeNode) {
+            TooltipNode::get()->removeActiveNode(fields->m_activeNode);
+        }
+        fields->m_activeNode = activeNode;
     }
 };

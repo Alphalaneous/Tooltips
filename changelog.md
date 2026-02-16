@@ -1,3 +1,6 @@
+# 1.0.5
+- Fix another dumb issue
+
 # 1.0.4
 - Fix major performance issue
 
