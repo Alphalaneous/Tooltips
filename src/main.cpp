@@ -18,6 +18,7 @@ static std::unordered_map<std::string, std::string> g_simpleReplacements = {
 	{"robtop", "RobTop"},
 	{"hsv", "HSV"},
 	{"ui", "UI"},
+	{"tiktok", "TikTok"},
 };
 
 class TooltipNode : public CCNodeRGBA {

@@ -1,6 +1,7 @@
 # 1.0.3
 - Fix tooltips persisting
 - Fix tooltips not showing when leaving a menu
+- Fix TikTok capitalization
 
 # 1.0.2
 - Bub fix
