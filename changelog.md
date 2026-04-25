@@ -1,3 +1,8 @@
+# 1.0.6
+- Rewrite most of the mod
+- Tooltips no longer persist
+- Works with geode::Button
+
 # 1.0.5
 - Fix another dumb issue
 
