@@ -4,6 +4,8 @@
 
 using namespace tooltips;
 
+TooltipNode* TooltipNode::s_instance = nullptr;
+
 TooltipNode* TooltipNode::create() {
     auto ret = new TooltipNode();
     if (ret->init()) {
@@ -15,8 +17,27 @@ TooltipNode* TooltipNode::create() {
 }
 
 TooltipNode* TooltipNode::get() {
-    static Ref<TooltipNode> instance = TooltipNode::create();
-    return instance;
+    if (!s_instance) s_instance = TooltipNode::create();
+    return s_instance;
+}
+
+void TooltipNode::reset() {
+    std::set<CCNode*> nodes;
+    if (s_instance) {
+        nodes = s_instance->getActiveNodes();
+        s_instance->removeFromParent();
+        s_instance = nullptr;
+    }
+    OverlayManager::get()->addChild(tooltips::TooltipNode::get());
+    tooltips::TooltipNode::get()->setActiveNodes(nodes);
+}
+
+std::set<CCNode*> TooltipNode::getActiveNodes() {
+    return m_activeNodes;
+}
+
+void TooltipNode::setActiveNodes(std::set<CCNode*> nodes) {
+    m_activeNodes = std::move(nodes);
 }
 
 void TooltipNode::addNode(CCNode* node) {

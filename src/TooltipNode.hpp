@@ -11,6 +11,8 @@ namespace tooltips {
         static TooltipNode* create();
         static TooltipNode* get();
 
+        static void reset();
+
         void addNode(CCNode* node);
         void removeNode(CCNode* node);
 
@@ -21,6 +23,9 @@ namespace tooltips {
 
         void checkMouse(float dt);
 
+        std::set<CCNode*> getActiveNodes();
+        void setActiveNodes(std::set<CCNode*> nodes);
+
     protected:
         bool init();
 
@@ -30,5 +35,7 @@ namespace tooltips {
         CCLabelBMFont* m_label = nullptr;
         geode::NineSlice* m_bg = nullptr;
         float m_offset;
+
+        static TooltipNode* s_instance;
     };
 }

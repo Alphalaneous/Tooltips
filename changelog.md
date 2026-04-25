@@ -2,6 +2,7 @@
 - Rewrite most of the mod
 - Tooltips no longer persist
 - Works with geode::Button
+- Fix it breaking when switching qualities and fullscreen/windowed
 
 # 1.0.5
 - Fix another dumb issue

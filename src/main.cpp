@@ -28,5 +28,11 @@ class $baseModify(MyButton, geode::Button) {
 };
 
 $on_mod(Loaded) {
-    OverlayManager::get()->addChild(tooltips::TooltipNode::get());
+    tooltips::TooltipNode::reset();
+}
+
+$on_game(TexturesLoaded) {
+    queueInMainThread([] {
+        tooltips::TooltipNode::reset();
+    });
 }
