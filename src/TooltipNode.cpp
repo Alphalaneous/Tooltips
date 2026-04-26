@@ -81,7 +81,19 @@ void TooltipNode::show(float dt) {
 }
 
 void TooltipNode::showTooltip(CCNode* node) {
-    if (m_currentNode == node) return;
+    #ifdef GEODE_IS_DESKTOP
+    if (!tooltips::utils::isHoverable(node, getMousePos())) {
+        setVisible(false);
+        return;
+    }
+    #endif
+    if (!nodeIsVisible(node)) {
+        setVisible(false);
+        return;
+    }
+    if (m_currentNode == node) {
+        return;
+    }
     m_currentNode = node;
 
     auto str = typeinfo_cast<CCString*>(node->getUserObject("tooltip"_spr));

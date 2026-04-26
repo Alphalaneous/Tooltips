@@ -1,3 +1,6 @@
+# 1.0.7
+- Add visibility check, oops
+
 # 1.0.6
 - Rewrite most of the mod
 - Tooltips no longer persist
