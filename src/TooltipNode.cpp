@@ -168,14 +168,14 @@ void TooltipNode::checkMouse(float dt) {
 
         #else
 
-        auto item = typeinfo_cast<CCMenuItem*>(node);
+        auto item = typeinfo_cast<CCMenuItem*>(node.data());
         if (item && item->isSelected()) {
             showTooltip(node);
             tooltipShown = true;
             break;
         }
 
-        auto button = typeinfo_cast<geode::Button*>(node);
+        auto button = typeinfo_cast<geode::Button*>(node.data());
         if (button && button->isSelected()) {
             showTooltip(node);
             tooltipShown = true;
