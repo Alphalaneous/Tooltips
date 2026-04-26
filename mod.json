@@ -8,7 +8,7 @@
 	},
 	"id": "alphalaneous.tooltips",
 	"name": "Tooltips",
-	"version": "v1.0.7",
+	"version": "v1.0.8",
 	"developer": "Alphalaneous",
 	"description": "Adds tooltips to buttons",
 	"dependencies": {

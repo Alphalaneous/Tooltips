@@ -22,7 +22,7 @@ TooltipNode* TooltipNode::get() {
 }
 
 void TooltipNode::reset() {
-    std::set<CCNode*> nodes;
+    std::set<Ref<CCNode>> nodes;
     if (s_instance) {
         nodes = s_instance->getActiveNodes();
         s_instance->removeFromParent();
@@ -32,11 +32,11 @@ void TooltipNode::reset() {
     tooltips::TooltipNode::get()->setActiveNodes(nodes);
 }
 
-std::set<CCNode*> TooltipNode::getActiveNodes() {
+std::set<Ref<CCNode>> TooltipNode::getActiveNodes() {
     return m_activeNodes;
 }
 
-void TooltipNode::setActiveNodes(std::set<CCNode*> nodes) {
+void TooltipNode::setActiveNodes(std::set<Ref<CCNode>> nodes) {
     m_activeNodes = std::move(nodes);
 }
 

@@ -1,3 +1,6 @@
+# 1.0.8
+- Fix potential crash
+
 # 1.0.7
 - Add visibility check, oops
 

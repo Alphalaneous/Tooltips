@@ -23,13 +23,13 @@ namespace tooltips {
 
         void checkMouse(float dt);
 
-        std::set<CCNode*> getActiveNodes();
-        void setActiveNodes(std::set<CCNode*> nodes);
+        std::set<Ref<CCNode>> getActiveNodes();
+        void setActiveNodes(std::set<Ref<CCNode>> nodes);
 
     protected:
         bool init();
 
-        std::set<CCNode*> m_activeNodes;
+        std::set<Ref<CCNode>> m_activeNodes;
         CCNode* m_currentNode;
 
         CCLabelBMFont* m_label = nullptr;
